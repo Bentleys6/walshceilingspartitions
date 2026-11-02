@@ -18,7 +18,9 @@
 - After every change, run `npm run check` (lint, type check, tests, build, security scan) and fix anything that fails before committing. A hook runs it automatically before every `git push` and blocks the push if it fails; never bypass it.
 - Use the site-health-check skill (.claude/skills/site-health-check) before go-live, after adding any outside service, and after package updates.
 - Adding an outside service (analytics, embed, chat, booking, form provider): add its domain to the Content-Security-Policy in src/lib/security-headers.ts and to src/test/security.test.ts.
-- Keep secrets out of the site. Only public keys (like the Web3Forms access key) may go in src/.
+- Keep secrets out of the site. Only public keys (like the Web3Forms access key) may go in src/. The security-scan test fails the check if a key pattern, .env file, raw-HTML injection, debug leftover or source map appears.
+- Security check every time: `npm run check` after every change (the hook enforces it on push), plus the built-in `/security-review` on the changes before anything is merged to main. Report the result in plain English.
+- The site has no logins, admin, database, uploads or API of its own, which removes most of the standard "20 security checks". Adding any of these needs asking first, and then the matching checks in the site-health-check skill become required.
 
 # Hosting
 - Cloudflare Workers Builds from this GitHub repo. Build `npm run build`, deploy `npx wrangler deploy` (default; uses the config the build generates in .output/), production branch `main`. See README.md.

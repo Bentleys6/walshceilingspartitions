@@ -46,6 +46,39 @@ Run these in order and report results in plain English. Fix what fails; ask befo
 - `siteUrl`, sitemap.xml and robots.txt point at the live domain; submit the sitemap in Google Search Console.
 - Uptime monitor (e.g. UptimeRobot, free) on the homepage, alerting the site owner's agency email.
 
+## 8. The 20 standard security checks
+
+Go through every line each time and report ✅ / ➖ (not applicable, say why) / ❌.
+
+| #   | Check                 | On this site                                                                                                                      |
+| --- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Hide API keys         | Automatic: security-scan test. Only public keys (Web3Forms) in src/.                                                              |
+| 2   | Environment variables | Automatic: no .env committed. Secrets only in Cloudflare/GitHub settings, never in code.                                          |
+| 3   | Keys in git history   | `git log -p --all` scan for key patterns before go-live and after any key was ever pasted.                                        |
+| 4   | Protect admin routes  | ➖ No admin area. Required the moment one is added.                                                                               |
+| 5   | Authentication / 2FA  | ➖ No logins on the site. Do turn on 2FA for GitHub, Cloudflare, domain registrar, email.                                         |
+| 6   | User permissions      | ➖ No user accounts.                                                                                                              |
+| 7   | Sanitise user inputs  | Form fields validated in QuoteForm; Web3Forms handles delivery. React escapes all text.                                           |
+| 8   | XSS protection        | Automatic: no dangerouslySetInnerHTML/eval/innerHTML (security-scan test) + CSP header. JSON-LD only uses our own data.           |
+| 9   | SQL injection         | ➖ No database.                                                                                                                   |
+| 10  | Database rules (RLS)  | ➖ No database.                                                                                                                   |
+| 11  | Rate limiting / spam  | Honeypot field + Web3Forms spam filtering. If spam arrives: add Cloudflare Turnstile (ask first).                                 |
+| 12  | Spend caps            | Cloudflare Workers free plan and Web3Forms free plan can't bill. Any paid API added later must have a spend cap set.              |
+| 13  | Secure file uploads   | ➖ No uploads (drawings go by WhatsApp).                                                                                          |
+| 14  | CSRF protection       | ➖ No logged-in actions. TanStack Start's CSRF middleware stays on in src/start.ts.                                               |
+| 15  | CORS settings         | ➖ The site has no API of its own.                                                                                                |
+| 16  | HTTPS                 | Cloudflare. In the dashboard: SSL/TLS → Always Use HTTPS on; HSTS header set in code.                                             |
+| 17  | Security headers      | Automatic: src/lib/security-headers.ts + security test.                                                                           |
+| 18  | Secure cookies        | ➖ The site sets no cookies (consent stored in localStorage). Meta Pixel only after consent.                                      |
+| 19  | Debug mode off        | Automatic: production build, no console.log/debugger (security-scan test), no source maps published, error pages show no details. |
+| 20  | Production settings   | `siteUrl` is the live domain, Cloudflare production branch is `main`, form keys set.                                              |
+
+Anything marked ➖ becomes required (and needs its own tests) as soon as the site gains that feature: logins, admin, database, uploads, payments or its own API. Ask before adding any of these.
+
+## 9. Code security review
+
+Before anything is merged to `main`, run the built-in `/security-review` skill on the changes and fix anything it finds.
+
 ## Ask first
 
 New npm packages, any backend/database/auth, changing form submission logic, removing pages or changing URLs.
