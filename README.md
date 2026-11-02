@@ -19,7 +19,15 @@ bun install     # or: npm install --legacy-peer-deps
 npm run dev     # local dev server
 npm run build   # production build into .output/
 npm test        # unit tests
+npm run check   # everything: lint, types, tests, build, security scan
 ```
+
+## Safety checks
+
+- **GitHub Actions** (`.github/workflows/check.yml`): lint, type check, tests, build and a package security scan on every push and pull request, plus weekly. Don't merge a red ✗ to `main`.
+- **Dependabot** (`.github/dependabot.yml`): monthly package update pull requests, tested by the workflow.
+- **Security headers** (`src/lib/security-headers.ts`): Content-Security-Policy, HSTS, clickjacking and sniffing protection on every page.
+- **Claude Code**: `CLAUDE.md` loads the rules in `AGENTS.md`; a hook runs `npm run check` before every `git push`; the `site-health-check` skill holds the full checklist.
 
 ## Deploying to Cloudflare
 
@@ -38,4 +46,5 @@ Other branches get preview URLs, so changes can be checked before they go live.
 - [ ] Copy the domain's email (MX/TXT) records into Cloudflare DNS before switching nameservers
 - [ ] Point www.walshceilingspartitions.co.uk at the Worker, and redirect the bare domain to www
 - [ ] Submit `/sitemap.xml` in Google Search Console
+- [ ] Free uptime monitor (e.g. UptimeRobot) on the homepage
 - [ ] Real photo of a metal stud partition for `metal-stud-partitions` in `src/data/services.ts`

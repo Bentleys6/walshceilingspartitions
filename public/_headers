@@ -1,3 +1,6 @@
+/*
+  X-Content-Type-Options: nosniff
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
 /images/*
   cache-control: public, max-age=2592000, stale-while-revalidate=86400
 /favicon*

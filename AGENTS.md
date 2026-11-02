@@ -15,9 +15,14 @@
 - Don't use stock photos on the site without a licence that covers it.
 - No new npm packages, backend, database or auth without asking first.
 - Don't change the form submission logic unless asked.
-- After every change, run npm run build and npm test, and fix any errors before committing.
+- After every change, run `npm run check` (lint, type check, tests, build, security scan) and fix anything that fails before committing. A hook runs it automatically before every `git push` and blocks the push if it fails; never bypass it.
+- Use the site-health-check skill (.claude/skills/site-health-check) before go-live, after adding any outside service, and after package updates.
+- Adding an outside service (analytics, embed, chat, booking, form provider): add its domain to the Content-Security-Policy in src/lib/security-headers.ts and to src/test/security.test.ts.
+- Keep secrets out of the site. Only public keys (like the Web3Forms access key) may go in src/.
 
 # Hosting
 - Cloudflare Workers Builds from this GitHub repo. Build `npm run build`, deploy `npx wrangler deploy` (default; uses the config the build generates in .output/), production branch `main`. See README.md.
-- public/_headers sets browser caching for /images/*; Nitro adds long-lived caching for /assets/* at build time.
+- Security headers for pages are set in src/lib/security-headers.ts (applied in src/server.ts); public/_headers only reaches static files (images caching, nosniff, HSTS). Nitro adds long-lived caching for /assets/* at build time.
+- GitHub Actions ("Check site", .github/workflows/check.yml) runs `npm run check` steps on every push, pull request and weekly. Don't merge to main while it's red.
+- Dependabot (.github/dependabot.yml) opens monthly package update PRs; merge when the check is green.
 - Cloudflare Web Analytics is cookie-free and turns on when `cloudflareAnalyticsToken` is set in src/data/business.ts.
