@@ -142,9 +142,7 @@ export const services: Service[] = [
           "Insulating for sound or fire performance where specified",
           "Boarding ready for finishing",
         ],
-        // No photo of a metal stud frame yet, so the service page shows text only.
-        // The homepage card still needs a picture.
-        cardImage: "boardedForJointing",
+        image: "metalStudPartition",
       },
       {
         id: "timber-stud-partitions",
