@@ -9,7 +9,7 @@ import { Img } from "@/components/site/Img";
 import { QuoteForm } from "@/components/site/QuoteForm";
 import { PhoneLink } from "@/components/site/ContactLinks";
 import { PhoneIcon } from "@/components/site/Icons";
-import { CtaBand, FaqList } from "@/components/site/Widgets";
+import { CtaBand, FaqList, StudFrameDrawing } from "@/components/site/Widgets";
 import { faqSchema } from "@/lib/schema";
 
 export const Route = createFileRoute("/")({
@@ -119,11 +119,15 @@ function Home() {
                   tabIndex={-1}
                   aria-hidden="true"
                 >
-                  <Img
-                    name={c.cardImage}
-                    sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
-                    className="aspect-[4/3] w-full rounded-sm object-cover"
-                  />
+                  {c.cardImage ? (
+                    <Img
+                      name={c.cardImage}
+                      sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
+                      className="aspect-[4/3] w-full rounded-sm object-cover"
+                    />
+                  ) : (
+                    <StudFrameDrawing className="aspect-[4/3] w-full rounded-sm" />
+                  )}
                 </Link>
                 <h3 className="mt-5 text-xl">{c.title}</h3>
                 <p className="mt-2 text-[0.95rem] text-muted-foreground">{c.summary}</p>

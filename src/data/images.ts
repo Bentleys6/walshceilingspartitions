@@ -120,16 +120,6 @@ export const images = {
     "portrait",
   ),
 
-  // Not Walsh's own work: image from onlineinsulation-sales.com. Needs their permission before going live.
-  metalStudPartition: {
-    src: "/images/17-metal-stud-partition-800.webp",
-    srcSet:
-      "/images/17-metal-stud-partition-800.webp 800w, /images/17-metal-stud-partition-1600.webp 1360w",
-    alt: "Metal stud partition frame next to a boarded wall, under a suspended ceiling grid",
-    width: 800,
-    height: 452,
-  },
-
   // 1200x630 preview used when the site is shared on WhatsApp, Facebook, LinkedIn etc.
   share: {
     src: "/images/share.jpg",

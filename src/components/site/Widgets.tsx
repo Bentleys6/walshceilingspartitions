@@ -153,3 +153,45 @@ export function ImageCarousel({
     </div>
   );
 }
+
+/**
+ * Line drawing of a metal stud frame (head track, floor track, studs, one boarded bay), in the
+ * same outline style as the logo. Stands in on the homepage card until there's a real photo.
+ */
+export function StudFrameDrawing({ className = "" }: { className?: string }) {
+  const studs = [70, 130, 190, 250, 310];
+  return (
+    <div className={`flex items-center justify-center bg-[#e7e7e3] ${className}`}>
+      <svg
+        viewBox="0 0 400 300"
+        className="h-[78%] w-auto text-charcoal"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="5"
+        strokeLinejoin="round"
+        role="img"
+        aria-label="Drawing of a metal stud partition frame"
+      >
+        {/* boarded bay */}
+        <rect
+          x="250"
+          y="40"
+          width="80"
+          height="220"
+          fill="currentColor"
+          fillOpacity="0.08"
+          strokeWidth="0"
+        />
+        {/* head and floor tracks */}
+        <rect x="40" y="30" width="320" height="14" />
+        <rect x="40" y="256" width="320" height="14" />
+        {studs.map((x) => (
+          <g key={x}>
+            <rect x={x - 9} y="44" width="18" height="212" />
+            <line x1={x} y1="60" x2={x} y2="240" strokeWidth="2" strokeOpacity="0.45" />
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}

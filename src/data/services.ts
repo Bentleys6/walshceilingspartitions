@@ -142,7 +142,7 @@ export const services: Service[] = [
           "Insulating for sound or fire performance where specified",
           "Boarding ready for finishing",
         ],
-        image: "metalStudPartition",
+        // No photo yet: the page shows text only and the homepage card shows a drawing.
       },
       {
         id: "timber-stud-partitions",
@@ -264,7 +264,7 @@ export const homeCards = services.flatMap((s) =>
     ...sub,
     slug: s.slug,
     // Every service has a card picture: its own, or the section photo.
-    cardImage: (sub.cardImage ?? sub.image) as ImageKey,
+    cardImage: sub.cardImage ?? sub.image,
     title: sub.cardTitle ?? sub.name,
     linkLabel: sub.cardLink ?? `View ${sub.name.toLowerCase()}`,
   })),
