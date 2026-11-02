@@ -52,15 +52,19 @@ function ServicePage() {
             className={dark ? "bg-charcoal text-charcoal-foreground" : "bg-offwhite"}
           >
             <div className={`container-site ${i === 0 ? "pb-20 md:pb-28" : "section-pad"}`}>
-              <div className="grid items-start gap-10 md:grid-cols-2 md:gap-12">
-                <div className={dark ? "md:order-2" : ""}>
-                  <Img
-                    name={sub.image}
-                    eager={i === 0}
-                    sizes="(min-width: 768px) 580px, 100vw"
-                    className="aspect-[16/9] w-full rounded-sm object-cover"
-                  />
-                </div>
+              <div
+                className={`grid items-start gap-10 md:gap-12 ${sub.image ? "md:grid-cols-2" : "max-w-3xl"}`}
+              >
+                {sub.image && (
+                  <div className={dark ? "md:order-2" : ""}>
+                    <Img
+                      name={sub.image}
+                      eager={i === 0}
+                      sizes="(min-width: 768px) 580px, 100vw"
+                      className="aspect-[16/9] w-full rounded-sm object-cover"
+                    />
+                  </div>
+                )}
                 <div>
                   <h2 className="text-2xl md:text-[1.75rem]">{sub.name}</h2>
                   <p

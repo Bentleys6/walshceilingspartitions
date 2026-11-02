@@ -120,7 +120,7 @@ function Home() {
                   aria-hidden="true"
                 >
                   <Img
-                    name={c.cardImage ?? c.image}
+                    name={c.cardImage}
                     sizes="(min-width: 1024px) 400px, (min-width: 640px) 50vw, 100vw"
                     className="aspect-[4/3] w-full rounded-sm object-cover"
                   />

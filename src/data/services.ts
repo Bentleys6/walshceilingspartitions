@@ -8,7 +8,8 @@ export type SubService = {
   summary: string;
   body: string;
   involved: string[];
-  image: ImageKey;
+  /** Photo beside the text on the service page; leave out for text only. */
+  image?: ImageKey;
   /** Extra photos shown under the section. */
   gallery?: ImageKey[];
   /** Homepage "What we do" card image, when different from `image`. */
@@ -141,8 +142,9 @@ export const services: Service[] = [
           "Insulating for sound or fire performance where specified",
           "Boarding ready for finishing",
         ],
-        // TODO: no photo of a metal stud frame yet (the old site used a stock photo we can't reuse).
-        image: "boardedForJointing",
+        // No photo of a metal stud frame yet, so the service page shows text only.
+        // The homepage card still needs a picture.
+        cardImage: "boardedForJointing",
       },
       {
         id: "timber-stud-partitions",
@@ -263,6 +265,8 @@ export const homeCards = services.flatMap((s) =>
   s.subServices.map((sub) => ({
     ...sub,
     slug: s.slug,
+    // Every service has a card picture: its own, or the section photo.
+    cardImage: (sub.cardImage ?? sub.image) as ImageKey,
     title: sub.cardTitle ?? sub.name,
     linkLabel: sub.cardLink ?? `View ${sub.name.toLowerCase()}`,
   })),

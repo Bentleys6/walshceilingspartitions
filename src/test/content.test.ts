@@ -45,6 +45,7 @@ describe("site content", () => {
 
   it("has six homepage service cards and alt text on every photo", () => {
     expect(homeCards).toHaveLength(6);
+    for (const c of homeCards) expect(images[c.cardImage], c.id).toBeDefined();
     for (const img of Object.values(images)) expect(img.alt.length).toBeGreaterThan(10);
   });
 
