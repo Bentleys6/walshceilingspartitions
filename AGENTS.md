@@ -8,7 +8,7 @@
 
 # Rules for Claude Code
 - Start every session with git pull.
-- Work on a branch and share the Cloudflare preview URL for approval; merge to main only when approved (main is live).
+- Commit and push straight to main for normal changes (wording, photos, content, small layout tweaks); main is live and the owner prefers speed. Use a branch and ask before merging only for risky changes: form submission, security headers, packages, outside services, hosting, or large redesigns.
 - Make the smallest change that achieves each request. Do not restyle or rewrite anything that wasn't mentioned.
 - Change content in the src/data files, not in components.
 - Never invent reviews, star ratings, job counts, accreditations, prices or guarantee claims. FAQ answers must only use facts stated elsewhere on the site or confirmed by Daniel.
