@@ -44,8 +44,18 @@ If a doc or tool can't be reached, say which one and carry on with what can be d
 
 ## SOP step 6: Build in Claude Code
 
-- **Noah:** creates the private GitHub repo, selects only that repo when starting the Claude Code session, and connects it to Cloudflare (Workers & Pages → Create → GitHub; build `npm run build`, deploy `npx wrangler deploy`, production branch `main`). If the repo starts empty, `main` has to be created from the first branch, and then set as the default branch in GitHub settings.
-- **Claude:** builds from the master prompt on the stack below, including the security kit (template Part 2, section 10). It shows homepage screenshots at 375px and 1440px before building the rest.
+- **Noah:** creates the private GitHub repo and selects only that repo when starting the Claude Code session. If the repo starts empty, `main` has to be created from the first branch, and then set as the default branch in GitHub settings. **Don't connect the repo to Cloudflare's own builds (Workers Builds):** GitHub deploys the site instead (see "Deploying" below). Noah's one Cloudflare job is the access key:
+  1. Cloudflare → profile icon → My Profile → API Tokens → Create Token → **Edit Cloudflare Workers** → Use template. Account Resources: the account. Zone Resources: all zones from the account. TTL empty. Create, and copy the token (shown once).
+  2. GitHub → the repo → Settings → Secrets and variables → Actions → New repository secret, name `CLOUDFLARE_API_TOKEN`, paste. (In a GitHub organisation, one organisation secret covers every repo.) The token is never pasted into chat or code.
+- **Claude:** builds from the master prompt on the stack below, including the security kit (template Part 2, section 10) and the deploy step. It shows homepage screenshots at 375px and 1440px before building the rest.
+
+### Deploying
+
+GitHub Actions deploys every site. Cloudflare only hosts it.
+- The "Check site" workflow (`.github/workflows/check.yml`, copy it from a reference repo) runs every check on each push; on pushes to `main` its last step runs `npx --yes wrangler@<pinned version> deploy --name <worker-name>` with `CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (`2ce1e67ce02857e056b33cadf5461ab4`). It retries 3 times 30 seconds apart (Cloudflare sometimes answers "please wait", code 971), skips itself while the secret is missing, and a workflow-level `concurrency` group stops two pushes deploying out of order.
+- **Always pass `--name`.** The build's generated config (`.output/server/wrangler.json`) names the Worker `<github-user>-<repo>`, not the name in Cloudflare; without `--name`, wrangler quietly creates a second Worker and the live site never updates. For a new site, pick the name once (usually the repo name); the first deploy creates it at `https://<name>.noahbentley.workers.dev`.
+- Push to live takes about 1–1½ minutes. After every push to `main`, Claude waits for the run's "Deploy to Cloudflare" step (`https://api.github.com/repos/<owner>/<repo>/actions/runs?head_sha=<sha>`) and only then says the change is live. If it fails, Claude reads the job log and fixes it.
+- Why not Workers Builds: its free build queue took from 40 seconds to 8 minutes on the same day, and its logs need Noah's login. If a site still has Workers Builds connected, disconnect it (Worker → Settings → Build) once the GitHub deploy works, so it doesn't deploy twice. Reconnecting it is the fallback if GitHub deploys ever stop.
 
 **Stack:** TanStack Start (React, server-rendered) + Tailwind v4 + TypeScript, built with Nitro to a Cloudflare Worker. Install with `bun install`. All content lives in `src/data/*` (business.ts, images.ts, services.ts, faqs.ts, work/results, formFields), never hard-coded in components. Forms post from the browser to Web3Forms. Until `formKeys.client` is set, forms must say "please call us", never pretend to send.
 
@@ -54,11 +64,12 @@ If a doc or tool can't be reached, say which one and carry on with what can be d
 Claude runs these itself before Noah tests on his phone:
 
 - `npm run check`: lint, type check, build, tests (including the security scan) and a package security scan. It must pass, and the pre-push hook enforces it.
-- Run the built site in Cloudflare's local runtime in the background: `npx wrangler dev --config .output/server/wrangler.json --ip 127.0.0.1 --port 8787`. (`vite preview` doesn't work here.) Check every route's status, that unknown pages return 404, and that the security headers are present.
+- Run the built site in Cloudflare's local runtime in the background: `npx wrangler dev --config .output/server/wrangler.json --ip 127.0.0.1 --port 8787`. (`vite preview` doesn't work here. The build sets today's compatibility date; if the local runtime is older, add `--compatibility-date` with the newest date it names.) Check every route's status, that unknown pages return 404, and that the security headers are present.
 - Playwright: screenshot each page at 1440px and 390px, load every page checking the console for errors and Content-Security-Policy blocks, open the mobile menu, and step through the forms. Compare page weight with the old site.
+- **Test phones at the height a visitor actually sees, not the full screen:** the browser's address and tool bars take 150–250px. Use 390×664 (iPhone), 375×553 (small iPhone), 412×780 (Android) and 430×740, and check the hero heading, photo and main button all sit where intended above the mobile call bar.
 - Fix what's wrong, then hand Noah a short phone checklist: Part 3 of the template.
 
-**Changes after go-live:** work on a branch. Merge to `main` only when Noah says so and the GitHub "Check site" run is green. Run `/security-review` before merging (if `origin/HEAD` is missing, run `git remote set-head origin main` first). Never delete branches or rewrite history without asking.
+**Changes after go-live:** follow the site's AGENTS.md. By default, normal changes (wording, photos, small layout tweaks) go straight to `main` because Noah prefers speed; risky ones (form submission, security headers, packages, outside services, hosting, big redesigns) go on a branch and merge only when Noah says so and the GitHub "Check site" run is green. Run `/security-review` before merging (if `origin/HEAD` is missing, run `git remote set-head origin main` first). Never delete branches or rewrite history without asking.
 
 ## SOP step 8: Go live and hand over
 
@@ -105,4 +116,5 @@ Claude runs these itself before Noah tests on his phone:
 
 - **Hosting: Cloudflare.** Vercel's free plan bans client work ($20/user/month Pro). Netlify forms are unlimited, but its free plan is one shared allowance per account, so one busy or spammed client can pause every site. Cloudflare is free for commercial use and keeps domain, DNS, email records and hosting together.
 - **Forms: Web3Forms**, one free account per client.
+- **Deploys: GitHub Actions running wrangler**, not Cloudflare Workers Builds (see "Deploying"). Predictable 1–1½ minute deploys and logs Claude can read.
 - **One Claude Code cloud environment for every site.** Network access is Full. The setup script loops over every repo with a package.json and never fails the session. Anything outside a repo is wiped when the session ends, so rules, skills and checks live in each repo and in this skill.

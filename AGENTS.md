@@ -23,7 +23,8 @@
 - The site has no logins, admin, database, uploads or API of its own, which removes most of the standard "20 security checks". Adding any of these needs asking first, and then the matching checks in the site-health-check skill become required.
 
 # Hosting
-- Cloudflare Workers Builds from this GitHub repo. Build `npm run build`, deploy `npx wrangler deploy` (default; uses the config the build generates in .output/), production branch `main`. See README.md.
+- Hosted on Cloudflare Workers. GitHub Actions deploys it: the "Check site" workflow runs every check on a push to main and then `npx wrangler deploy --name walshceilingspartitions` (needs the CLOUDFLARE_API_TOKEN repo secret; keep `--name`, the build's generated config uses a different Worker name). Cloudflare Workers Builds is not connected. See README.md.
+- After every push to main, wait for the "Check site" run on that commit to finish, including its "Deploy to Cloudflare" step (public API: https://api.github.com/repos/Bentleys6/walshceilingspartitions/actions/runs?head_sha=<sha>; about 1–2 minutes). Only tell the owner a change is live once it succeeded. If it fails, read the job log, fix it and say what happened.
 - Security headers for pages are set in src/lib/security-headers.ts (applied in src/server.ts); public/_headers only reaches static files (images caching, nosniff, HSTS). Nitro adds long-lived caching for /assets/* at build time.
 - GitHub Actions ("Check site", .github/workflows/check.yml) runs `npm run check` steps on every push, pull request and weekly. Don't merge to main while it's red.
 - Dependabot (.github/dependabot.yml) opens monthly package update PRs; merge when the check is green.

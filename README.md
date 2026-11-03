@@ -31,13 +31,11 @@ npm run check   # everything: lint, types, tests, build, security scan
 
 ## Deploying to Cloudflare
 
-Cloudflare Workers Builds deploys automatically from GitHub:
+GitHub Actions deploys the site: on every push to `main`, the "Check site" workflow (`.github/workflows/check.yml`) runs all the checks and, if they pass, runs `npx wrangler deploy --name walshceilingspartitions`. It takes about a minute and a half from push to live, with no build queue. Live address until the domain moves: https://walshceilingspartitions.noahbentley.workers.dev
 
-- Production branch: `main`
-- Build command: `npm run build`
-- Deploy command: `npx wrangler deploy` (the default; it finds the config the build writes to `.output/`)
-
-Other branches get preview URLs, so changes can be checked before they go live.
+- It needs one repository secret, `CLOUDFLARE_API_TOKEN` (GitHub → repo Settings → Secrets and variables → Actions). Make it in Cloudflare → My Profile → API Tokens → Create Token → "Edit Cloudflare Workers" template, limited to this account. Without the secret the workflow skips the deploy.
+- Cloudflare Workers Builds (Cloudflare building from GitHub itself) is not connected for this Worker and shouldn't be, so the site isn't deployed twice.
+- `--name` matters: the build's generated config names the Worker differently, and without it wrangler would create a second Worker instead of updating the live one.
 
 ## Go-live checklist
 
