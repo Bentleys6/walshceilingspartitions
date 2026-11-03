@@ -85,6 +85,7 @@ Claude runs these itself before Noah tests on his phone:
 - **SEO:** per-page title and description, canonical URLs, Open Graph and Twitter tags, a 1200×630 share image (hero photo plus logo), LocalBusiness / HomeAndConstructionBusiness JSON-LD, BreadcrumbList and FAQPage JSON-LD, sitemap.xml, robots.txt disallowing /thank-you.
 - Thank-you page (noindex), a privacy policy matching what the site actually does, a 404 page, a mobile call/WhatsApp bar, a desktop WhatsApp button. Every tel:/wa.me link goes through PhoneLink/WhatsAppLink.
 - Lead source capture (UTM, fbclid), a Meta Pixel that only loads after cookie consent, and a slot for the Cloudflare Web Analytics token.
+- **UX and accessibility:** before handing over, check pages against the `ui-ux-pro-max` skill's rules (contrast, tap targets, visible labels, inline form errors, focus states, mobile layout) with targeted `--domain ux` searches. It's a checking tool: never let its `--design-system` output replace the client's brand or the template's design system.
 - **Speed:** WebP at 800/1600 with width and height set, lazy loading below the fold, the hero preloaded. Maps (about 2MB) load on click; videos load near the screen. No animation or form libraries; remove unused template packages.
 - **Security kit** (template section 10; see each repo's site-health-check skill):
   - security headers in `src/lib/security-headers.ts`, applied in `src/server.ts` (`public/_headers` only reaches static files)
